@@ -1,29 +1,16 @@
 package app;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-
 import ch.swingfx.twinkle.NotificationBuilder;
 import ch.swingfx.twinkle.style.INotificationStyle;
 import ch.swingfx.twinkle.style.theme.DarkDefaultNotification;
 import ch.swingfx.twinkle.window.Positions;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HoursMinutesSecondsTimerAddingDial extends JDialog {
 	private static final long serialVersionUID = 7138252394781923014L;
@@ -41,11 +28,7 @@ public class HoursMinutesSecondsTimerAddingDial extends JDialog {
 											.withMessageFontColor(new Color(250, 100, 100));
 	
 	private static int counter;
-	//private static LinkedList<Pattern> patterns; TODO: Potrzebne do tego nizej
 
-	/**
-	 * Create the dialog.
-	 */
 	public HoursMinutesSecondsTimerAddingDial(JFrame owner) {
 		super(owner);
 		setBounds(100, 100, 174, 215);
@@ -97,7 +80,6 @@ public class HoursMinutesSecondsTimerAddingDial extends JDialog {
 		textFieldSeconds.setColumns(10);
 		
 		setUpComponents();
-		//initPatterns(); TODO potrzebne do tego nizej
 	}
 	
 	private void setUpComponents(){
@@ -115,26 +97,17 @@ public class HoursMinutesSecondsTimerAddingDial extends JDialog {
 		textFieldSeconds.addFocusListener(myFocusListener);
 		textFieldSeconds.addKeyListener(myKeyListener);
 		
-		btnOk.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				parseHMS(textFieldHours.getText(),
-						textFieldMinutes.getText(),
-						textFieldSeconds.getText());
+		btnOk.addActionListener(e -> {
+            parseHMS(textFieldHours.getText(),
+                    textFieldMinutes.getText(),
+                    textFieldSeconds.getText());
 
-				HoursMinutesSecondsTimerAddingDial.this.dispose();
-			}
-		});
+            HoursMinutesSecondsTimerAddingDial.this.dispose();
+        });
 		
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				HoursMinutesSecondsTimerAddingDial.this.dispose();
-			}
-		});
+		btnCancel.addActionListener(e -> HoursMinutesSecondsTimerAddingDial.this.dispose());
 	}
-	
-	/**
-	 * Parsuje zawartosc textFieldow i dodaje wytworzony timer
-	 */
+
 	private void parseHMS(String h, String m, String s){
 		Pattern pattern = Pattern.compile("[0-9]+");
 		long hours = -1;
@@ -142,57 +115,54 @@ public class HoursMinutesSecondsTimerAddingDial extends JDialog {
 		long seconds = -1;
 		String parseLog = "";
 
-		Matcher matcher = pattern.matcher(textFieldHours.getText());
+		Matcher matcher = pattern.matcher(h);
 		if(matcher.matches()){
-			hours = Long.parseLong(textFieldHours.getText())*3600000;
+			hours = Long.parseLong(h)*3600000;
 		}else{
 			hours = 0;
 			parseLog += "Problem przy parsowaniu godzin! Ustawiam na zero!\n";
 		}
 
-		matcher = pattern.matcher(textFieldMinutes.getText());
+		matcher = pattern.matcher(m);
 		if(matcher.matches()){
-			minutes = Long.parseLong(textFieldMinutes.getText())*60000;
+			minutes = Long.parseLong(m)*60000;
 		}else{
 			minutes = 0;
 			parseLog += "Problem przy parsowaniu minut! Ustawiam na zero!\n";
 		}
 
-		matcher = pattern.matcher(textFieldSeconds.getText());
+		matcher = pattern.matcher(s);
 		if(matcher.matches()){
-			seconds = Long.parseLong(textFieldSeconds.getText())*1000;
+			seconds = Long.parseLong(s)*1000;
 		}else{
 			seconds = 0;
 			parseLog += "Problem przy parsowaniu sekund! Ustawiam na zero!\n";
 		}
 		
 		counter++;
-		TimersMainFrame.timerList.addTimer(new Timer(hours + minutes + seconds, 
-											txtDescription.getText().replaceAll("\\s", "").equals("") ? "["+counter+"]" : txtDescription.getText()));
+		TimersMainFrame.timerList.addTimer(new Timer(hours + minutes + seconds,
+				txtDescription.getText().replaceAll("\\s", "").equals("") ? "[" + counter + "]" : txtDescription.getText()));
 		if(!parseLog.equals("")){
 			new NotificationBuilder()
-			.withStyle(style) // Required. here we set the previously set style
-			.withTitle("Blad!") // Required.
-			.withMessage(parseLog) // Optional
-			.withIcon("images/icon.png") // Optional. You could also use a String path
-			.withDisplayTime(5000) // Optional
-			.withPosition(Positions.SOUTH_EAST) // Optional. Show it at the center of the screen
-			.showNotification(); // this returns a UUID that you can use to identify events on the listener
+			.withStyle(style)
+			.withTitle("Blad!")
+			.withMessage(parseLog)
+			.withIcon("images/icon.png")
+			.withDisplayTime(5000)
+			.withPosition(Positions.SOUTH_EAST)
+			.showNotification();
 		}
 	}
 	
-	private class MyFocusListener implements FocusListener{
+	private class MyFocusListener extends FocusAdapter {
 		@Override
 		public void focusGained(FocusEvent arg0) {
 			if(arg0.getComponent() instanceof JTextField)
 				((JTextField)arg0.getSource()).selectAll();
 		}
-		
-		public void focusLost(FocusEvent arg0) {}
 	}
 	
-	private class MyKeyListener implements KeyListener{
-
+	private class MyKeyListener extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_ENTER){
@@ -201,8 +171,5 @@ public class HoursMinutesSecondsTimerAddingDial extends JDialog {
 				HoursMinutesSecondsTimerAddingDial.this.dispose();
 			}
 		}
-
-		public void keyReleased(KeyEvent arg0) {}
-		public void keyTyped(KeyEvent arg0) {}
 	}
 }
