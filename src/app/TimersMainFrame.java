@@ -12,6 +12,7 @@ public class TimersMainFrame extends JFrame {
     private JPanel contentPane;
     public static JButton addTimerButt;
     public static JButton defaultTimerButton;
+    public static JButton defaultTimerButton2;
 
     public static TimerList timerList;
     public static JTextArea timersTextArea;
@@ -81,10 +82,15 @@ public class TimersMainFrame extends JFrame {
         });
         contentPane.add(addTimerButt);
 
-        defaultTimerButton = new JButton("10 Minutes");
-        defaultTimerButton.setBounds(142, 337, 92, 32);
+        defaultTimerButton = new JButton("10m");
+        defaultTimerButton.setBounds(142, 337, /*92*/56, 32);
         defaultTimerButton.addActionListener(arg0 -> timerList.addTimer(new Timer(10 * 1000 * 60, "Started " + LocalDateTime.now().toLocalTime())));
         contentPane.add(defaultTimerButton);
+
+        defaultTimerButton2 = new JButton("15m");
+        defaultTimerButton2.setBounds(198, 337, 56, 32);
+        defaultTimerButton2.addActionListener(arg0 -> timerList.addTimer(new Timer(15 * 1000 * 60, "Started " + LocalDateTime.now().toLocalTime())));
+        contentPane.add(defaultTimerButton2);
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(new LineBorder(new Color(0, 0, 0)));
@@ -125,8 +131,8 @@ public class TimersMainFrame extends JFrame {
         lblFinishedTimers.setBounds(314, 0, 150, 37);
         contentPane.add(lblFinishedTimers);
 
-        clearDeadTimersButt = new JButton("Clear finished timers");
-        clearDeadTimersButt.setBounds(242, 337, 132, 32);
+        clearDeadTimersButt = new JButton("Clear finished");
+        clearDeadTimersButt.setBounds(262, 337, 112, 32);
         clearDeadTimersButt.addActionListener(arg0 -> timerList.clearFinishedTimers());
         contentPane.add(clearDeadTimersButt);
 
